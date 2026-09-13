@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Service Manual Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="hero-clouds" aria-hidden="true">
+    <svg viewBox="0 0 1440 200" preserveAspectRatio="none">
+      <path d="M0,120 C240,40 400,170 640,110 C880,50 1040,150 1280,90 C1360,70 1400,80 1440,70 L1440,200 L0,200 Z"
+            fill="rgba(255,255,255,.14)"/>
+      <path d="M0,160 C200,100 420,190 700,140 C980,90 1180,175 1440,130 L1440,200 L0,200 Z"
+            fill="rgba(255,255,255,.22)"/>
+    </svg>
+  </div>
+
+  <div class="wrap hero-inner">
+    <div class="hero-text">
+      <span class="badge">Answers grounded in your document</span>
+      <h1>Service Manual Assistant</h1>
+      <p>Upload a manual and ask it anything. Every answer shows the page it
+         came from, and when the manual doesn't cover something, it says so
+         instead of guessing.</p>
+    </div>
+
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 240 200">
+        <rect x="34" y="24" width="120" height="150" rx="8"
+              fill="#ffffff" opacity=".45" transform="rotate(-7 94 99)"/>
+        <rect x="46" y="20" width="122" height="152" rx="9" fill="#ffffff"/>
+        <rect x="62" y="42" width="66" height="7" rx="3.5" fill="#8FCDEA"/>
+        <rect x="62" y="60" width="90" height="5" rx="2.5" fill="#DCEAF3"/>
+        <rect x="62" y="73" width="78" height="5" rx="2.5" fill="#DCEAF3"/>
+        <rect x="62" y="86" width="86" height="5" rx="2.5" fill="#DCEAF3"/>
+        <rect x="62" y="104" width="90" height="38" rx="4" fill="#EDF6FC"/>
+        <line x1="62" y1="117" x2="152" y2="117" stroke="#C9E3F2" stroke-width="1.5"/>
+        <line x1="62" y1="130" x2="152" y2="130" stroke="#C9E3F2" stroke-width="1.5"/>
+        <line x1="104" y1="104" x2="104" y2="142" stroke="#C9E3F2" stroke-width="1.5"/>
+        <circle cx="160" cy="132" r="30" fill="rgba(255,255,255,.28)"/>
+        <circle cx="160" cy="132" r="24" fill="none" stroke="#ffffff" stroke-width="6"/>
+        <line x1="179" y1="151" x2="198" y2="170" stroke="#ffffff"
+              stroke-width="8" stroke-linecap="round"/>
+        <path d="M196 46 l4 11 11 4 -11 4 -4 11 -4 -11 -11 -4 11 -4 z"
+              fill="rgba(255,255,255,.75)"/>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ UPLOAD ============ -->
+  <section id="upload-stage">
+    <div id="dropzone" tabindex="0" role="button"
+         aria-label="Choose a PDF manual or drop one here">
+      <span class="dz-badge">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 16.5V4m0 0L7 9m5-5 5 5" fill="none" stroke="currentColor"
+                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"
+                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <p class="dz-title">Drop a PDF manual here</p>
+      <p class="dz-sub">or click to browse &middot; up to 30 MB</p>
+      <input type="file" id="file-input" accept="application/pdf" hidden>
+    </div>
+
+    <div id="upload-progress" hidden>
+      <div class="bar"><span></span></div>
+      <p id="progress-text">Reading the manual…</p>
+    </div>
+
+    <p id="upload-error" class="notice notice-error" hidden></p>
+
+    <ul class="steps">
+      <li>
+        <span class="step-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 3h8l4 4v14H6z" fill="none" stroke="currentColor" stroke-width="1.7"
+                  stroke-linejoin="round"/>
+            <path d="M14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.7"
+                  stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <h3>Every page is read</h3>
+        <p>The manual is split into overlapping sections, each tagged with its page number.</p>
+      </li>
+      <li>
+        <span class="step-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.7"/>
+            <line x1="16" y1="16" x2="21" y2="21" stroke="currentColor"
+                  stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <h3>Meaning, not keywords</h3>
+        <p>Ask about "petrol capacity" and it still finds the page headed "fuel tank".</p>
+      </li>
+      <li>
+        <span class="step-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3.5 19.5 7v5.5c0 4.2-3 7-7.5 8.3C7.5 19.5 4.5 16.7 4.5 12.5V7z"
+                  fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="M9 12.2l2.1 2.1L15.2 10" fill="none" stroke="currentColor"
+                  stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <h3>It admits what it can't find</h3>
+        <p>Weak matches are refused rather than answered with an invented figure.</p>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ============ LOADED DOC ============ -->
+  <section id="doc-bar" hidden>
+    <span class="doc-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <path d="M6 3h8l4 4v14H6z" fill="none" stroke="currentColor" stroke-width="1.7"
+              stroke-linejoin="round"/>
+        <path d="M14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.7"
+              stroke-linejoin="round"/>
+      </svg>
+    </span>
+    <div class="doc-meta">
+      <p class="doc-name" id="doc-name"></p>
+      <p class="doc-stats" id="doc-stats"></p>
+    </div>
+    <button type="button" id="change-doc" class="link-btn">Change</button>
+  </section>
+
+  <!-- ============ ASK ============ -->
+  <section id="ask-stage" hidden>
+    <div class="ask-row">
+      <input type="text" id="question" autocomplete="off"
+             placeholder="What torque should the front axle nut be tightened to?">
+      <button type="button" id="ask-btn">Ask</button>
+    </div>
+    <div id="suggestions" class="suggestions"></div>
+    <p id="ask-error" class="notice notice-error" hidden></p>
+  </section>
+
+  <!-- ============ ANSWER ============ -->
+  <section id="answer-stage" hidden>
+    <div id="thinking" class="thinking" hidden>
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      Searching the manual
+    </div>
+
+    <article id="answer-card" hidden>
+      <p id="answer-text"></p>
+
+      <div class="gauge">
+        <div class="gauge-head">
+          <span class="gauge-label" id="gauge-label"></span>
+          <span class="gauge-value" id="gauge-value"></span>
+        </div>
+        <div class="gauge-track">
+          <div class="gauge-fill" id="gauge-fill"></div>
+          <div class="gauge-threshold" id="gauge-threshold"
+               title="Answers below this line are refused"></div>
+        </div>
+        <p class="gauge-note" id="gauge-note"></p>
+      </div>
+    </article>
+
+    <div id="sources" hidden>
+      <h2>Where this came from</h2>
+      <ul id="source-list"></ul>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Answers come only from the uploaded document. Check the cited page before
+       acting on any figure.</p>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
