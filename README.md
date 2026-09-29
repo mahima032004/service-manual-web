@@ -4,7 +4,6 @@ Upload a vehicle service manual and ask it questions in plain language. Every
 answer cites the page it came from, and the assistant declines to answer when
 the manual doesn't cover the question.
 
-**Live demo:** _add your Space URL here_
 
 ---
 
