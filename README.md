@@ -22,7 +22,7 @@ refuses when it can't find the answer.
 
 ```
 PDF upload
-   → pdfplumber extracts text per page
+   → PyMuPDF extracts text per page
    → split into overlapping 160-word chunks, each tagged with its page
    → all-MiniLM-L6-v2 embeds every chunk into a 384-dim vector
 
@@ -88,10 +88,10 @@ would be the next thing to try.
 
 | Layer | Choice | Why |
 |---|---|---|
-| Text extraction | pdfplumber | Per-page extraction, which is what makes page citations possible |
-| Embeddings | all-MiniLM-L6-v2 via ONNX Runtime (`fastembed`) | Same weights as the PyTorch version, but ~105 MB of dependencies instead of ~2 GB, which is what lets it run on a 512 MB free instance |
+| Text extraction | PyMuPDF | Fast per-page extraction, which is what makes page citations possible |
+| Embeddings | all-MiniLM-L6-v2 via ONNX Runtime (`fastembed`) | Same weights as the PyTorch version, but ~105 MB of dependencies instead of ~2 GB, so it installs quickly and runs on an ordinary laptop CPU |
 | Vector search | NumPy dot product | Exact search over a few thousand vectors takes milliseconds; an approximate index would add a dependency and a config surface for no measurable gain at this scale |
-| Generation | Llama-class model via Groq | Fast inference, open weights, free tier |
+| Generation | `gpt-oss-120b` (open-weight) via Groq | Fast inference, free tier |
 | Backend | Flask | Two endpoints; a framework with more structure would be overhead |
 | Frontend | Plain HTML, CSS and JavaScript | No build step |
 
@@ -118,18 +118,14 @@ Open http://localhost:7860
 
 Get a free Groq API key at https://console.groq.com — no credit card needed.
 
-## Deploying
-
-Runs as a Docker container on Render's free tier. See DEPLOY.md.
-
 ## Limitations
 
 - Uploaded documents live in server memory and are lost when the server
   restarts. Persisting them would need a database or object storage.
 - Scanned PDFs return no text. The upload is rejected with an explanation
   rather than silently producing an empty index; OCR would be needed.
-- Single worker process, since the index is held in memory. Scaling horizontally
-  would mean moving the index to a shared vector store.
+- Runs as a single process, since the index is held in memory. Serving many
+  users would mean moving the index to a shared vector store.
 - The similarity threshold was set empirically against a small corpus. The
   nearest out-of-scope question cleared it by 0.01, which is a narrow margin —
   tuning it against a larger set of out-of-scope questions is the next step.

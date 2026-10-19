@@ -37,8 +37,8 @@ def get_model():
     """Load the embedding model once and reuse it.
 
     fastembed runs the same MiniLM weights through ONNX Runtime instead of
-    PyTorch. Same vectors, but ~100 MB of dependencies instead of ~2 GB, which
-    is what lets this run on a 512 MB free tier.
+    PyTorch. Same vectors, but ~100 MB of dependencies instead of ~2 GB, so it
+    installs quickly and runs on an ordinary laptop CPU.
     """
     global _model
     if _model is None:
